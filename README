@@ -1,10 +1,10 @@
 galpal - Verilog GAL and PAL models
 -----------------------------------
 
-These models are designed to assist in simulating part for obsolete 5v
-GAL and PAL series parts.
+These models are designed to assist in simulating obsolete 5v GAL and
+PAL series parts.
 
-To build a model from a JEDEC fusemap, simply copy your fusemap to the
+To build a model from a JEDEC fusemap, simply copy your fusemap to
 this directory as 'Model_Name.jed', and run:
 
 $ make Model_Name.v
@@ -13,7 +13,7 @@ The Makefile will generate a Verilog model from your fusemap, where the
 fusemap is encoded as a constant integer string in the model.
 
 Generated models only require the 'galpal_22V10.v' or 'galpal_16R8.v'
-helper models for instantiation.
+helper models for instantiation (in the 'rtl' subdirecory).
 
 Example 22V10 and 16R8 JEDEC fusemaps are in the 'test' directory.
 
