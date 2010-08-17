@@ -1,0 +1,24 @@
+GAL22V10
+22V10_IO
+
+I0  I1 I2 I3 I4 I5 I6 I7 I8 I9 I10 GND
+I11 O0 O1 O2 O3 O4 O5 O6 O7 O8 O9  VCC
+
+
+AR = I10
+
+SP = I11
+
+O0 = I0
+O1 = I1
+O2 = I2
+O3 = I3
+O4 = I4
+O5 = I5
+O6 = I6
+O7 = I7
+O8 = I8
+O9 = I9
+
+DESCRIPTION
+'Straight Through' test
