@@ -19,6 +19,8 @@
  *
  */
 
+`include "../rtl/tim15.v"
+
 module galpal_22V10_mux (
 	input	S,
 	input	[1:0]	I,
@@ -30,24 +32,32 @@ assign O = I[S];
 endmodule
 
 module galpal_22V10_dff (
-	input	AR,
-	input	SP,
+	input	ARX,
+	input	SPX,
 	input	D,
 	input	CLK,
-	output	Q,
-	output	_Q
+	output	QX,
+	output	_QX
 );
 
 reg Q;
-
-assign _Q = !Q;
+wire AR;
+wire SP;
+//goes to feedback
+assign #(`TCF_MIN:`TCF_MAX:`TCF_MAX) _QX = !Q;
+//goes to output
+assign #(`TCO_MIN:`TCO_MAX:`TCO_MAX) QX = Q;
+//input to reset of reg
+assign #(`TAP_MIN-`TCO_MIN:`TAP_MAX-`TCO_MAX:`TAP_MAX-`TCO_MAX) AR = ARX;
+//SP setup time
+assign #(`TSP_MIN) SP = SPX;
 
 initial
-	Q = 1'b0;
+Q = 1'b0;
 
 always @(posedge AR or posedge CLK)
 	if (AR == 1'b1)
-		Q <= 1'b0;
+    Q <= 1'b0;
 	else if (SP == 1'b1)
 		Q <= 1'b1;
 	else 
@@ -120,20 +130,30 @@ reg o;
 wire s0_o;
 wire s1o_o;
 wire s1q_o;
+wire dff_inp;
+wire comb_inp;
+wire en_out;
+
 
 always @(s1o_o)
 	o <= s1o_o;
 
 assign O = o;
 assign _O = !o;
+assign #(`TEA_MIN:`TEA_MAX:`TEA_MAX,`TER_MIN:`TER_MAX:`TER_MAX) en_out = E;
+assign #`TS_MIN dff_inp=I;
+assign #(`TPD_MIN:`TPD_MAX:`TPD_MAX) comb_inp=I;
+galpal_22V10_dff dff (.ARX(AR),.SPX(SP),.D(dff_inp),.CLK(CLK),.QX(q),._QX(_q));
 
-galpal_22V10_dff dff (.AR(AR),.SP(SP),.D(I),.CLK(CLK),.Q(q),._Q(_q));
-
+//output inversion TCO/TPD/TS/TCF
 galpal_22V10_mux s0_mux (.I({!s1q_o,s1q_o}),.O(s0_o),.S(S[0]));
-galpal_22V10_mux s1q_mux (.I({I,q}),.O(s1q_o),.S(S[1]));
+//comb/ff select
+galpal_22V10_mux s1q_mux (.I({comb_inp,q}),.O(s1q_o),.S(S[1]));
+//feedback path if reg, then ts+tcf, if comb it's tpd('coz ext pin)
 galpal_22V10_mux s1o_mux (.I({IOQ,_q}),.O(s1o_o),.S(S[1]));
 
-bufif1(IOQ, !s0_o, E);
+//out buffer
+bufif1(IOQ, !s0_o, en_out);
 
 endmodule
 
@@ -152,7 +172,7 @@ wire [21:0] prod_in;
 wire [9:0] olmc_e;
 wire [9:0] olmc_i;
 wire [9:0] olmc_o;
-
+/*
 assign prod_in = {
 	I[0], olmc_o[0],
 	I[1], olmc_o[1],
@@ -165,7 +185,23 @@ assign prod_in = {
 	I[8], olmc_o[8],
 	I[9], olmc_o[9],
 	I[10],I[11]};
+*/
 
+assign prod_in = {
+I[11],
+I[10],
+ olmc_o[9],I[9],
+ olmc_o[8],	I[8], 
+  olmc_o[7],	I[7],
+   olmc_o[6],I[6],
+    olmc_o[5],I[5],
+     olmc_o[4],
+     	I[4],olmc_o[3],
+     	I[3],  olmc_o[2],
+     	I[2], olmc_o[1],
+     	I[1], olmc_o[0],
+	I[0]
+	};
 wire [5891:0] fuse;
 
 assign fuse = FUSE;
