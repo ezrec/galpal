@@ -160,7 +160,6 @@ endmodule
 module galpal_22V10 #(
 	parameter FUSE = 5892'b1
 	) (
-	input	I_CLK,		// Pin 1
 	input	[11:0]	I,	// Pin 2-11,13
 	input	GND,		// Pin 12
 	inout	[9:0]   IOQ,	// Pin 14-23
