@@ -4,6 +4,13 @@ Is supposed to write testvectors
 for 22V10 to stdout requires a delay parameter to
 wait for the outputs to settle
 
+When using the these vectors in a .jed file, don't forget to add a QVXXXX
+field at the top, to indicate the number of vectors.
+If the last vector is V0116 it's QV0116.
+(indices are one based)
+Generates a spurious, empty vector at the end. 
+Unclear cause. Has to be removed.
+
 if any of the inputs change, wait a bit,
 then dump the pins as testvector
 
