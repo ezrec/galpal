@@ -68,6 +68,21 @@ sub read_jed {
 			substr $fuse, $1, length($2), $2;
 			next;
 		}
+		if ($_ =~ /^F([0-1])\*.*$/ ) {
+			$default = $1;
+			next;
+		}
+		if ($_ =~ /^QF([0-9]*)\*.*$/ ) {
+			$fuselen = $1;
+			for ($i = 0; $i < $fuselen; $i++) {
+				$fuse .= $default;
+			}
+			next;
+		}
+		if ($_ =~ /^L([0-9]*)\s+([01]*)\*.*$/ ) {
+			substr $fuse, $1, length($2), $2;
+			next;
+		}
 	}
 
 	return ($type, $fuselen."'b".(scalar reverse $fuse));
