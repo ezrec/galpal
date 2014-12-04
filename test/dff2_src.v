@@ -40,12 +40,12 @@ bufif1(q2,q2a,oe);
 notif1(q3,q3a,oe);
 bufif1(q4,q4a,oe);
 
-  always @(posedge clk)// or posedge rst)
+  always @(posedge clk or posedge rst)
     if (rst)
       q1a <= 1'b1;
     else
 	    if(ce)
-	    q1a <= d;
+        q1a <= d;
 
   always @(posedge clk or posedge rst)
     if (rst)
