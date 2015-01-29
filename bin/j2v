@@ -39,6 +39,7 @@ sub new {
 package main;
 
 sub read_jed {
+	local $/="*";
 	my ($file) = @_;
 
 	my ($type, $fuselen);
@@ -49,27 +50,37 @@ sub read_jed {
 
 	while (<JEDEC>) {
 		chomp $_;
-		if ($_ =~ /^Device:\s*([^\s]*)\s*$/ ) {
-			$type = $1;
-			next;
-		}
-		if ($_ =~ /^\*F([0-1])$/ ) {
+		if ($_ =~ /^\s*F([0-1])\s*$/ ) {
 			$default = $1;
 			next;
 		}
-		if ($_ =~ /^\*QF([0-9]*)$/ ) {
+	}
+	
+	seek(JEDEC,0,0);
+	while (<JEDEC>) {
+		chomp $_;
+		if ($_ =~ /^\s*QF([0-9]*)\s*$/ ) {
 			$fuselen = $1;
 			for ($i = 0; $i < $fuselen; $i++) {
 				$fuse .= $default;
 			}
 			next;
 		}
-		if ($_ =~ /^\*L([0-9]*)\s+([01]*)$/ ) {
+		if ($_ =~ /^\s*L([0-9]*)\s+([01]*)\s*$/ ) {
 			substr $fuse, $1, length($2), $2;
 			next;
 		}
 	}
-
+	
+	$/="\n";
+	seek(JEDEC,0,0);
+	while (<JEDEC>) {
+		chomp $_;
+		if ($_ =~ /^Device:\s*([^\s]*)\s*$/ ) {
+			$type = $1;
+			next;
+		}
+	}
 	return ($type, $fuselen."'b".(scalar reverse $fuse));
 }
 

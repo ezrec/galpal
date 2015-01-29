@@ -43,7 +43,7 @@ testvec #(.io_dly(21))tvo  (
 integer i;
 
 initial begin
-	$dumpfile("tb.vcd");
+	$dumpfile("dff2.vcd");
 	$dumpvars(16, DFF_bench);
 //  #100 
   I=0;
